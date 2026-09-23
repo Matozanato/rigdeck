@@ -15,6 +15,11 @@ DEFAULTS = {
     "currency": "auto",    # auto | EUR | USD | GBP | CHF
     "tick_hz": 20,
     "vjoy_device": 1,
+    # The vJoy device is switched on when a panel connects and off again shortly
+    # after the last one leaves, because its driver bugchecks the machine now and
+    # then when anything enumerates it. Set false to leave it permanently on, the
+    # way it used to be.
+    "vjoy_auto_device": True,
     "pulse_ms": 70,        # how long a virtual button is held for a one-shot press
 }
 

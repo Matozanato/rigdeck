@@ -1,8 +1,8 @@
-/* Caches the app shell so the panel still opens (and can say what is wrong) when the
+﻿/* Caches the app shell so the panel still opens (and can say what is wrong) when the
    PC is unreachable. Network first, because a stale shell against a newer server is
    worse than a slightly slower start. */
 
-const CACHE = 'rigdeck-v3';
+const CACHE = 'rigdeck-v6';
 const SHELL = ['./', './index.html', './style.css', './app.js', './mapdata.js',
                './manifest.webmanifest', './icon.svg'];
 const MAPS = '/maps/';   // road cells: left to the browser's own cache, see below

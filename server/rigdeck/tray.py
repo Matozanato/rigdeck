@@ -100,8 +100,12 @@ class Tray:
     def menu(self) -> list:
         _, text = self.state()
         vjoy = self.deck.vjoy.status()
-        vjoy_line = (f"vJoy device {vjoy['device']}" if vjoy["available"]
-                     else f"vJoy: {vjoy['reason']}")
+        if vjoy["available"]:
+            vjoy_line = f"vJoy device {vjoy['device']}"
+        elif self.deck.vjoy.auto_device:
+            vjoy_line = "vJoy: asleep until a panel connects"
+        else:
+            vjoy_line = f"vJoy: {vjoy['reason']}"
         return [
             (0, text, MF_GRAYED),
             (0, vjoy_line, MF_GRAYED),

@@ -12,6 +12,8 @@ import threading
 import time
 from pathlib import Path
 
+from . import vjoydev
+
 DLL_CANDIDATES = [
     Path(r"C:\Program Files\vJoy\x64\vJoyInterface.dll"),
     Path(r"C:\Program Files\vJoy\x86\vJoyInterface.dll"),
@@ -29,15 +31,27 @@ STATUS_TEXT = {
 
 
 class VJoy:
-    def __init__(self, device: int = 1) -> None:
+    def __init__(self, device: int = 1, auto_device: bool = True) -> None:
         self.device = device
+        self.auto_device = auto_device
         self.dll = None
         self.available = False
         self.reason = "not initialised"
+        self.device_note = ""
+        self._switched_on = False
         self._lock = threading.Lock()
         self._held: set[int] = set()
 
     def start(self) -> bool:
+        # The vJoy device is kept switched off while nothing needs it, because its driver
+        # bugchecks the machine now and then when something enumerates it (see
+        # vjoydev.py).  Switch it on first; if that fails we still try, in case it was
+        # left on by hand.
+        if self.auto_device:
+            on, why = vjoydev.enable()
+            self.device_note = why
+            self._switched_on = on and why == "switched on"
+
         dll_path = next((p for p in DLL_CANDIDATES if p.is_file()), None)
         if dll_path is None:
             self.reason = "vJoy is not installed"
@@ -57,17 +71,27 @@ class VJoy:
         self.dll.RelinquishVJD.argtypes = [ctypes.c_uint]
         self.dll.ResetVJD.argtypes = [ctypes.c_uint]
 
-        if not self.dll.vJoyEnabled():
-            self.reason = "the vJoy driver is installed but disabled"
-            return False
-
-        status = self.dll.GetVJDStatus(self.device)
-        if status not in (STATUS_OWN, STATUS_FREE):
-            self.reason = f"vJoy device {self.device} is {STATUS_TEXT.get(status, 'unavailable')}"
-            return False
-        if not self.dll.AcquireVJD(self.device):
-            self.reason = f"could not acquire vJoy device {self.device}"
-            return False
+        # A device that has just been switched on is not ready the instant Windows says
+        # it exists: the driver still has to finish starting, and until it does
+        # vJoyEnabled() and GetVJDStatus() answer as if there were no device at all.
+        # So the first few seconds are retried rather than believed.
+        deadline = time.monotonic() + (6.0 if self._switched_on else 0.0)
+        while True:
+            if not self.dll.vJoyEnabled():
+                self.reason = "the vJoy driver is installed but disabled"
+            else:
+                status = self.dll.GetVJDStatus(self.device)
+                if status not in (STATUS_OWN, STATUS_FREE):
+                    self.reason = (f"vJoy device {self.device} is "
+                                   f"{STATUS_TEXT.get(status, 'unavailable')}")
+                elif not self.dll.AcquireVJD(self.device):
+                    self.reason = f"could not acquire vJoy device {self.device}"
+                else:
+                    break
+            if time.monotonic() >= deadline:
+                self._release_device()
+                return False
+            time.sleep(0.3)
 
         self.dll.ResetVJD(self.device)
         self.available = True
@@ -80,6 +104,19 @@ class VJoy:
                 self.set_button(button, False)
             self.dll.RelinquishVJD(self.device)
         self.available = False
+        self._release_device()
+
+    def _release_device(self) -> None:
+        """Switch the device back off, but only if we were the ones who switched it on.
+
+        Leaving someone else's device off would be rude, and leaving our own on is what
+        this whole arrangement exists to avoid.
+        """
+        if not self._switched_on:
+            return
+        self._switched_on = False
+        ok, why = vjoydev.disable()
+        self.device_note = why if ok else "could not switch the device off: " + why
 
     def set_button(self, button: int, pressed: bool) -> bool:
         if not self.available or button < 1 or button > 128:
@@ -101,4 +138,5 @@ class VJoy:
         return True
 
     def status(self) -> dict:
-        return {"available": self.available, "device": self.device, "reason": self.reason}
+        return {"available": self.available, "device": self.device,
+                "reason": self.reason, "device_note": self.device_note}

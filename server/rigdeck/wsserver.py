@@ -115,6 +115,10 @@ class Hub:
         self._lock = threading.Lock()
         self.on_command = lambda msg, client: None
         self.on_connect = lambda client: None
+        # Fired with the number of panels still connected, every time one goes away --
+        # including the ones broadcast() finds dead rather than the ones that hang up
+        # politely, which is most of them when a tablet goes out of wifi range.
+        self.on_disconnect = lambda remaining: None
 
     def add(self, client: WSClient) -> None:
         with self._lock:
@@ -122,7 +126,13 @@ class Hub:
 
     def remove(self, client: WSClient) -> None:
         with self._lock:
+            was_there = client in self._clients
             self._clients.discard(client)
+            remaining = len(self._clients)
+        # Outside the lock: the callback asks the hub how many are left, and this lock
+        # is not reentrant.
+        if was_there:
+            self.on_disconnect(remaining)
 
     def broadcast(self, payload: dict) -> None:
         data = _frame(json.dumps(payload, separators=(",", ":")).encode("utf-8"))

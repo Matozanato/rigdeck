@@ -1,4 +1,4 @@
-﻿<#
+<#
     Builds the zip that goes to someone else's PC.
 
         powershell -ExecutionPolicy Bypass -File packaging\make_zip.ps1
@@ -102,7 +102,7 @@ $lines = Get-Content $pth.FullName
 if ($lines -notcontains '..\server') { ($lines + '..\server') | Set-Content $pth.FullName -Encoding ASCII }
 
 New-Item -ItemType Directory -Force (Join-Path $folder 'setup') | Out-Null
-foreach ($file in @('setup.ps1', 'bind.ps1', 'uninstall.ps1', 'vjoycheck.py')) {
+foreach ($file in @('setup.ps1', 'bind.ps1', 'uninstall.ps1', 'vjoycheck.py', 'vjoydevice.ps1')) {
     Copy-Item (Join-Path $PSScriptRoot $file) (Join-Path $folder 'setup') -Force
 }
 Copy-Item (Join-Path $root 'tools\vJoySetup-2.2.2.0-Win10-Win11.exe') (Join-Path $folder 'setup') -Force

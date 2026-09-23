@@ -16,14 +16,29 @@ from .wsserver import Hub, RigDeckServer, lan_addresses
 
 WEB_ROOT = Path(__file__).resolve().parent.parent.parent / "web"
 
+# How long the vJoy device is kept alive after the last panel disconnects. A tablet
+# that reloads the page, locks its screen or walks behind a wall comes back within
+# seconds, and switching a driver off and on again in that gap is both slow and
+# exactly the enumeration that makes vjoy.sys fall over.
+VJOY_LINGER = 45.0
+
 
 class RigDeck:
     def __init__(self) -> None:
         self.cfg = cfgmod.load()
         self.hub = Hub()
         self.reader = TelemetryReader()
-        self.vjoy = VJoy(int(self.cfg.get("vjoy_device", 1)))
-        self.vjoy.start()
+        self.vjoy = VJoy(int(self.cfg.get("vjoy_device", 1)),
+                         bool(self.cfg.get("vjoy_auto_device", True)))
+        self._vjoy_lock = threading.RLock()
+        self._vjoy_linger: threading.Timer | None = None
+        # On demand, the device is brought up by the first panel that connects and put
+        # back to sleep after the last one leaves -- so Rig Deck can sit in the tray all
+        # day without a vJoy device existing for anything to enumerate. With
+        # vjoy_auto_device off the old behaviour is kept: up at startup, and there it
+        # stays.
+        if not self.vjoy.auto_device:
+            self.vjoy.start()
 
         self._snapshot: dict = {"online": False, "data": {}}
         self._map_game, self._map_checked, self._map_note = None, 0.0, ""
@@ -33,6 +48,7 @@ class RigDeck:
         self.executor = controlsmod.Executor(self.vjoy, self.cfg, self.get_snapshot)
         self.hub.on_command = self._on_command
         self.hub.on_connect = self._on_connect
+        self.hub.on_disconnect = self._on_disconnect
 
         self.server = RigDeckServer(self.hub, WEB_ROOT, self, int(self.cfg["port"]))
 
@@ -62,10 +78,44 @@ class RigDeck:
         self.executor.cfg = self.cfg
         return {"config": self.cfg}
 
+    # -- the vJoy device, on demand -----------------------------------------
+    def vjoy_wake(self) -> None:
+        """Make sure the device is there. Called on the connecting panel's own thread,
+        so the wait for the driver is paid by whoever turned up first."""
+        if not self.vjoy.auto_device:
+            return
+        with self._vjoy_lock:
+            if self._vjoy_linger is not None:
+                self._vjoy_linger.cancel()
+                self._vjoy_linger = None
+            if not self.vjoy.available:
+                self.vjoy.start()
+
+    def _on_disconnect(self, remaining: int) -> None:
+        if not self.vjoy.auto_device or remaining > 0:
+            return
+        with self._vjoy_lock:
+            if self._vjoy_linger is not None:
+                self._vjoy_linger.cancel()
+            self._vjoy_linger = threading.Timer(VJOY_LINGER, self._vjoy_sleep)
+            self._vjoy_linger.daemon = True
+            self._vjoy_linger.start()
+
+    def _vjoy_sleep(self) -> None:
+        with self._vjoy_lock:
+            self._vjoy_linger = None
+            # Somebody may have reconnected while the timer was already firing.
+            if self.hub.client_count == 0:
+                self.vjoy.stop()
+
     # -- websocket ----------------------------------------------------------
     def _on_connect(self, client) -> None:
         import json
 
+        # Before the hello, not after: the hello carries the vJoy status the panel puts
+        # on screen, and saying "controls off" to a device that is two seconds from
+        # being ready would be a lie the panel never takes back.
+        self.vjoy_wake()
         client.send_text(json.dumps({
             "type": "hello",
             "config": self.cfg,
@@ -158,6 +208,10 @@ class RigDeck:
             print("\nshutting down")
         finally:
             self._stop.set()
+            with self._vjoy_lock:
+                if self._vjoy_linger is not None:
+                    self._vjoy_linger.cancel()
+                    self._vjoy_linger = None
             self.vjoy.stop()
             self.reader.close()
 
@@ -170,7 +224,13 @@ class RigDeck:
         if len(addresses) > 1:
             print(f"  also on    {', '.join(f'{a}:{port}' for a in addresses[1:])}")
         vj = self.vjoy.status()
-        print(f"  vJoy       {'ready, device %d' % vj['device'] if vj['available'] else vj['reason']}")
+        if vj["available"]:
+            line = "ready, device %d" % vj["device"]
+        elif self.vjoy.auto_device:
+            line = "asleep -- switched on when a panel connects"
+        else:
+            line = vj["reason"]
+        print(f"  vJoy       {line}")
         print(f"  telemetry  waiting for the game...\n")
 
 

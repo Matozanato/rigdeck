@@ -151,6 +151,48 @@ if (-not $vjoyDll) {
     }
 }
 
+# -- 3b. the two tasks that switch the vJoy device on and off --------------------
+# vjoy.sys reads two characters past the end of its own device name and bugchecks the
+# machine when that read crosses a page boundary -- three times in nine days here, always
+# at vjoy.sys+0x6093, always while a game was enumerating controllers.  So the device is
+# kept switched off and Rig Deck turns it on only while the panel is running.
+#
+# Switching a PnP device needs administrator rights, which the panel has not got.  These
+# two tasks have them, and a task started with schtasks /run raises no UAC prompt -- that
+# is the whole point of routing through them.
+Head "3b" "Switching vJoy on only when the panel needs it"
+$switch = Join-Path $here 'vjoydevice.ps1'
+if (-not (Test-Path $switch)) {
+    Warn "vjoydevice.ps1 is missing -- vJoy will stay on all the time"
+} else {
+    try {
+        $psExe = (Get-Command powershell.exe).Source
+        foreach ($t in @(@{Name='RigDeckVJoyOn'; Action='enable'},
+                         @{Name='RigDeckVJoyOff'; Action='disable'})) {
+            $act = New-ScheduledTaskAction -Execute $psExe -Argument (
+                '-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File "{0}" -Action {1}' `
+                    -f $switch, $t.Action)
+            # S4U, not Interactive: an "interactive only" task is silently skipped when
+            # nobody is logged on at the console, and then the panel would sit waiting for
+            # a device that never comes back. S4U runs either way, and RunLevel Highest
+            # still gives it the rights, because the account is an administrator.
+            $pri = New-ScheduledTaskPrincipal -UserId ([Security.Principal.WindowsIdentity]::GetCurrent().Name) `
+                -LogonType S4U -RunLevel Highest
+            $set = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries `
+                -DontStopIfGoingOnBatteries -ExecutionTimeLimit (New-TimeSpan -Minutes 2)
+            Register-ScheduledTask -TaskName $t.Name -Action $act -Principal $pri `
+                -Settings $set -Description 'Rig Deck: vJoy device on/off' -Force | Out-Null
+        }
+        Good "registered RigDeckVJoyOn and RigDeckVJoyOff"
+
+        # Off by default.  Nothing needs it until the panel starts, and every hour it
+        # spends switched on is an hour the bug can fire.
+        & $psExe -NoProfile -ExecutionPolicy Bypass -File $switch -Action disable | ForEach-Object { Note $_ }
+    } catch {
+        Warn "could not register the vJoy tasks ($($_.Exception.Message)) -- vJoy will stay on all the time"
+    }
+}
+
 # -- 4. the firewall -------------------------------------------------------------
 Head 4 "Letting the tablet reach this PC"
 try {

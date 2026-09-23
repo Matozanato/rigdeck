@@ -1,54 +1,79 @@
-/* Rig Deck — night-cabin instrument palette. Everything is sized from --u, a single
-   unit set by fit() so the panel is one fixed landscape canvas scaled to the screen. */
+/* Rig Deck — dark soft-clay instrument. One slab of matte clay, every control raised
+   out of it or pressed into it, lit by a single light from the top left; the only
+   colour is a warm coral, plus the tell-tale colours a cab has by law. Everything is
+   sized from --u, a single unit set by fit() so the panel is one fixed landscape
+   canvas scaled to the screen. */
 
 :root {
-  --ground:  #100E0B;
-  --shell:   #070605;
-  --panel:   #191612;
-  --raised:  #211D17;
-  --line:    #332C22;
-  --text:    #F3EEE4;
-  --muted:   #9C9285;
-  --dim:     #6B6459;
+  --shell:   #030304;   /* the table the slab lies on */
+  --ground:  #0C0D10;   /* the slab itself */
+  --panel:   #0C0D10;   /* trays are carved into the slab, not laid on it */
+  --raised:  #111317;   /* a pad standing proud of the clay */
+  --well:    #060709;   /* the floor of a groove or a window */
+  --line:    #23262D;
+  --text:    #E4E7EC;
+  --soft:    #BCC2CB;
+  --muted:   #8A919C;
+  --dim:     #565C66;
 
-  --accent:  #FFB43D;
-  --accent-soft: rgba(255,180,61,.14);
+  /* The two faces of every relief: where the light lands, and where it does not. */
+  --hi:      rgba(255,255,255,.055);
+  --lo:      rgba(0,0,0,.95);
 
-  --tell-green: #4ADE80;
-  --tell-blue:  #5BA8FF;
-  --crit:       #FF5A47;
+  --accent:  #FF7A5E;
+  --accent-soft: rgba(255,122,94,.12);
+  --glow:    rgba(255,122,94,.55);
 
-  /* Map. Roads are ranked by weight so a motorway reads before a farm track. */
-  --map-ground: #14120E;
-  --map-area:   #26211A;
-  --map-minor:  #6E6559;
-  --map-road:   #B8AE9E;
-  --map-major:  #F1E9DA;
+  --tell-green: #5EE08E;
+  --tell-blue:  #6AAEFF;
+  --warn:       #FFB547;
+  --crit:       #FF4D5E;
+
+  /* Map. The map is the one screen in the slab: dark glass, not clay. Roads are
+     ranked by weight so a motorway reads before a farm track. */
+  --map-ground: #050608;
+  --map-area:   #111318;
+  --map-minor:  #5B626E;
+  --map-road:   #A3AAB5;
+  --map-major:  #EEF1F5;
   --map-ferry:  #4E7FB8;
-  --map-city:   #FFC964;
+  --map-city:   #FFA48E;
 
   /* Places on the map. Four colours, not eleven: what you are looking for is either
      somewhere to stop, somewhere to fill up, somewhere to get fixed, or a yard. The
      glyph says which one exactly; the colour gets you to the right group first. */
-  --poi-rest:    #5BA8FF;
-  --poi-fuel:    #FFB43D;
-  --poi-fix:     #4ADE80;
-  --poi-misc:    #B8AE9E;
+  --poi-rest:    #6AAEFF;
+  --poi-fuel:    #FFB547;
+  --poi-fix:     #5EE08E;
+  --poi-misc:    #A3AAB5;
   --poi-company: #C79BE8;
 
   --u: 15.7px;
   --r: calc(var(--u) * 0.9);
   --mono: ui-monospace, "Cascadia Mono", "Consolas", monospace;
   --face: "Roboto Condensed", "Roboto", "Segoe UI Variable Display", system-ui, sans-serif;
+
+  /* Relief, from the unit so it scales with the panel. */
+  --d: calc(var(--u) * .22);
+  --out:    calc(var(--d) * -1) calc(var(--d) * -1) calc(var(--d) * 2.4) var(--hi),
+            var(--d) var(--d) calc(var(--d) * 2.6) var(--lo);
+  --out-lg: calc(var(--d) * -2) calc(var(--d) * -2) calc(var(--d) * 5) var(--hi),
+            calc(var(--d) * 2.4) calc(var(--d) * 2.4) calc(var(--d) * 6) var(--lo);
+  --in:     inset var(--d) var(--d) calc(var(--d) * 2.2) var(--lo),
+            inset calc(var(--d) * -1) calc(var(--d) * -1) calc(var(--d) * 2) var(--hi);
+  --in-sm:  inset calc(var(--d) * .6) calc(var(--d) * .6) calc(var(--d) * 1.2) var(--lo),
+            inset calc(var(--d) * -.5) calc(var(--d) * -.5) calc(var(--d) * 1) var(--hi);
+  --rim:    inset 1px 1px 1px var(--lo), inset -1px -1px 1px var(--hi);
 }
 
+/* The light clay the style comes from, for daylight. */
 :root[data-day="1"] {
-  --ground: #E8E3D9; --shell: #C9C3B6; --panel: #F6F3EC; --raised: #FFFDF8; --line: #D3CCBE;
-  --text: #1B1712; --muted: #6E6558; --dim: #9A9184;
-  --accent: #B4700A; --accent-soft: rgba(180,112,10,.13);
-  --tell-green: #16965A; --tell-blue: #1F6FD0; --crit: #C42A1C;
-  --map-ground: #F2EEE5; --map-area: #E2DCCE; --map-minor: #A79C8B;
-  --map-road: #6E6555; --map-major: #2E2820; --map-ferry: #4A78AE; --map-city: #8A5504;
+  --shell: #D9DEE5; --ground: #E4E8EE; --panel: #E4E8EE; --raised: #E8ECF1; --well: #DCE1E8;
+  --line: #CDD3DB; --text: #3A404A; --soft: #555C67; --muted: #7C838E; --dim: #A2A9B3;
+  --hi: rgba(255,255,255,.95); --lo: rgba(163,172,185,.75);
+  --accent: #F2634A; --accent-soft: rgba(242,99,74,.12); --glow: rgba(242,99,74,.4);
+  --tell-green: #16965A; --tell-blue: #1F6FD0; --warn: #C98410; --crit: #D6283A;
+  --map-ground: #181B20; --map-area: #22262D;
   /* Darker than the night set: these are filled chips with a pale glyph cut out of
      them, so on a light ground they have to carry the contrast themselves. */
   --poi-rest: #2C6DB5; --poi-fuel: #A96A00; --poi-fix: #17864F;
@@ -58,7 +83,10 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: var(--shell); }
 
-.stage { position: fixed; inset: 0; overflow: hidden; background: var(--shell); }
+.stage {
+  position: fixed; inset: 0; overflow: hidden;
+  background: radial-gradient(ellipse at 30% 20%, color-mix(in srgb, var(--ground) 70%, var(--shell)), var(--shell) 70%);
+}
 .deck {
   position: absolute; left: 50%; top: 50%;
   transform: translate(-50%, -50%);
@@ -66,22 +94,24 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: 
   gap: calc(var(--u) * .7);
   padding: calc(var(--u) * .7);
   background: var(--ground);
-  border-radius: calc(var(--u) * 1.1);
-  box-shadow: 0 0 0 1px var(--line), 0 calc(var(--u) * 1.5) calc(var(--u) * 4) rgba(0,0,0,.5);
+  border-radius: calc(var(--u) * 1.4);
+  box-shadow: var(--out-lg), 0 calc(var(--u) * 1.5) calc(var(--u) * 4) rgba(0,0,0,.35);
   color: var(--text); font-family: var(--face); font-variant-numeric: tabular-nums;
   overflow: hidden;
   -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
 }
 
+/* A shallow tray cut into the slab; the controls stand up inside it. */
 .card {
-  background: var(--panel); border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--panel); border-radius: var(--r);
+  box-shadow: var(--rim);
   padding: calc(var(--u) * .75);
   display: flex; flex-direction: column; min-height: 0; min-width: 0;
 }
 
 .lbl {
-  font-size: calc(var(--u) * 1); letter-spacing: .13em; text-transform: uppercase;
-  color: var(--dim); font-weight: 600;
+  font-size: calc(var(--u) * .95); letter-spacing: .2em; text-transform: uppercase;
+  color: var(--dim); font-weight: 700;
 }
 
 .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
@@ -95,42 +125,46 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: 
 /* ── status bar ─────────────────────────────────────────── */
 .bar {
   display: flex; align-items: center; gap: calc(var(--u) * .8);
-  background: var(--panel); border: 1px solid var(--line);
+  background: var(--panel); box-shadow: var(--rim);
   border-radius: var(--r); padding: calc(var(--u) * .5) calc(var(--u) * .9);
 }
 .spacer { flex: 1; }
-.vr { width: 1px; align-self: stretch; background: var(--line); }
+.vr { width: 2px; align-self: stretch; background: var(--well); box-shadow: 1px 0 0 var(--hi); border-radius: 1px; }
 
 .pill {
   display: flex; align-items: center; gap: calc(var(--u) * .55);
-  background: var(--raised); border: 1px solid var(--line); border-radius: 999px;
+  background: var(--raised); border: 0; border-radius: 999px; box-shadow: var(--out);
   padding: calc(var(--u) * .4) calc(var(--u) * .95);
-  font-size: calc(var(--u) * 1.2); font-weight: 600; letter-spacing: .09em;
-  color: var(--text); font-family: inherit; cursor: pointer;
+  font-size: calc(var(--u) * 1.1); font-weight: 700; letter-spacing: .16em;
+  color: var(--soft); font-family: inherit; cursor: pointer;
 }
+.pill:active { box-shadow: var(--in-sm); }
 .pill:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .dot {
-  width: calc(var(--u) * .9); height: calc(var(--u) * .9); border-radius: 50%;
-  background: var(--tell-green); animation: beat 1.9s ease-in-out infinite;
+  width: calc(var(--u) * .75); height: calc(var(--u) * .75); border-radius: 50%;
+  background: var(--tell-green); box-shadow: 0 0 calc(var(--u) * .5) var(--tell-green);
+  animation: beat 1.9s ease-in-out infinite;
 }
 @keyframes beat { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
-.pill[data-link="stale"] .dot { background: var(--accent); }
-.pill[data-link="down"]  .dot { background: var(--crit); }
-.pill .ms { color: var(--muted); font-family: var(--mono); font-size: calc(var(--u) * 1); }
+.pill[data-link="stale"] .dot { background: var(--warn); box-shadow: 0 0 calc(var(--u) * .5) var(--warn); }
+.pill[data-link="down"]  .dot { background: var(--crit); box-shadow: 0 0 calc(var(--u) * .5) var(--crit); }
+.pill .ms { color: var(--muted); font-family: var(--mono); font-size: calc(var(--u) * 1); letter-spacing: 0; }
 
 .chip {
-  font-size: calc(var(--u) * 1.15); font-weight: 700; letter-spacing: .1em; color: var(--muted);
-  border: 1px solid var(--line); border-radius: calc(var(--r) * .7);
+  font-size: calc(var(--u) * 1.05); font-weight: 700; letter-spacing: .16em; color: var(--muted);
+  border-radius: calc(var(--r) * .7); box-shadow: var(--in-sm); background: var(--well);
   padding: calc(var(--u) * .3) calc(var(--u) * .75);
 }
-.chip.tap { cursor: pointer; background: var(--raised); color: var(--text); }
-.clock { font-family: var(--mono); font-size: calc(var(--u) * 1.5); }
+.chip.tap { cursor: pointer; background: var(--raised); color: var(--soft); box-shadow: var(--out); }
+.chip.tap:active { box-shadow: var(--in-sm); color: var(--accent); }
+.clock { font-family: var(--mono); font-size: calc(var(--u) * 1.5); color: var(--soft); }
 .cargo { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; }
 .cargo b { font-size: calc(var(--u) * 1.5); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+/* A real sign, so it keeps a real sign's white face and red ring. */
 .limit {
   width: calc(var(--u) * 3.2); height: calc(var(--u) * 3.2); border-radius: 50%;
-  border: calc(var(--u) * .36) solid var(--crit); background: var(--raised);
+  border: calc(var(--u) * .36) solid var(--crit); background: var(--raised); box-shadow: var(--out);
   display: grid; place-items: center; font-size: calc(var(--u) * 1.45); font-weight: 700;
 }
 .limit.none { opacity: .25; }
@@ -146,82 +180,113 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: 
 
 .cluster { gap: calc(var(--u) * .5); align-items: center; }
 .dial { position: relative; flex: 1; min-height: 0; width: 100%; }
-.dial svg { width: 100%; height: 100%; display: block; }
+.dial svg { width: 100%; height: 100%; display: block; overflow: visible; }
 .dial .read { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
 .kph { text-align: center; font-size: calc(var(--u) * 8.4); font-weight: 700; line-height: .84; letter-spacing: -.02em; }
-.kph small { font-size: calc(var(--u) * 1.35); font-weight: 600; letter-spacing: .16em; color: var(--dim); display: block; margin-top: calc(var(--u) * .45); }
+.kph small { font-size: calc(var(--u) * 1.2); font-weight: 700; letter-spacing: .24em; color: var(--dim); display: block; margin-top: calc(var(--u) * .45); }
 
-.rpm { width: 100%; display: flex; gap: calc(var(--u) * .16); height: calc(var(--u) * 1.35); flex: none; }
-.rpm i { flex: 1; border-radius: calc(var(--u) * .12); background: var(--raised); }
-.rpm i.on { background: var(--accent); }
-.rpm i.red { background: color-mix(in srgb, var(--crit) 22%, var(--raised)); }
-.rpm i.red.on { background: var(--crit); }
+.rpm {
+  width: 100%; display: flex; gap: calc(var(--u) * .16); height: calc(var(--u) * 1.35); flex: none;
+  padding: calc(var(--u) * .22); border-radius: calc(var(--u) * .4);
+  background: var(--well); box-shadow: var(--in-sm);
+}
+.rpm i { flex: 1; border-radius: calc(var(--u) * .12); background: var(--line); opacity: .55; }
+.rpm i.on { background: var(--accent); opacity: 1; box-shadow: 0 0 calc(var(--u) * .45) var(--glow); }
+.rpm i.red { background: color-mix(in srgb, var(--crit) 30%, var(--line)); }
+.rpm i.red.on { background: var(--crit); box-shadow: 0 0 calc(var(--u) * .45) var(--crit); }
 
 .gearrow { display: flex; align-items: stretch; gap: calc(var(--u) * .5); width: 100%; flex: none; }
+/* Readout windows: pressed into the clay. */
 .gear, .cc {
-  flex: 1; background: var(--raised); border: 1px solid var(--line); border-radius: calc(var(--r) * .8);
-  display: flex; flex-direction: column; align-items: center; padding: calc(var(--u) * .3) 0;
+  flex: 1; background: var(--well); box-shadow: var(--in); border-radius: calc(var(--r) * .8);
+  display: flex; flex-direction: column; align-items: center; padding: calc(var(--u) * .35) 0;
 }
 .cc { flex: 1.3; }
 .gear b { font-size: calc(var(--u) * 3); line-height: 1.05; font-weight: 700; }
-.cc.on { border-color: var(--tell-green); background: color-mix(in srgb, var(--tell-green) 12%, var(--raised)); }
+.cc.on { box-shadow: var(--in), inset 0 0 0 1px color-mix(in srgb, var(--tell-green) 45%, transparent); }
 .cc b { font-size: calc(var(--u) * 2.1); font-weight: 700; line-height: 1.2; margin-top: calc(var(--u) * .2); }
-.cc.on b { color: var(--tell-green); }
+.cc.on b { color: var(--tell-green); text-shadow: 0 0 calc(var(--u) * .7) color-mix(in srgb, var(--tell-green) 55%, transparent); }
 
 .ccrow { display: flex; gap: calc(var(--u) * .4); width: 100%; flex: none; height: calc(var(--u) * 3.4); }
-.tells { display: flex; gap: calc(var(--u) * .4); width: 100%; flex: none; }
+.tells {
+  display: flex; gap: calc(var(--u) * .4); width: 100%; flex: none;
+}
+/* Tell-tales are lamps behind the clay: dark until they light, then they glow. */
 .tell {
   flex: 1; height: calc(var(--u) * 2.9); border-radius: calc(var(--r) * .6);
-  background: var(--raised); border: 1px solid var(--line);
+  background: var(--well); box-shadow: var(--in-sm);
   display: grid; place-items: center; color: var(--dim);
+  transition: color .12s ease, background .12s ease;
 }
 .tell .ic { width: calc(var(--u) * 2); height: calc(var(--u) * 2); }
-.tell.on { color: var(--ground); }
-.tell.on[data-t="turn"]   { background: var(--tell-green); border-color: var(--tell-green); }
-.tell.on[data-t="high"]   { background: var(--tell-blue);  border-color: var(--tell-blue); }
-.tell.on[data-t="park"], .tell.on[data-t="warn"] { background: var(--crit); border-color: var(--crit); color: #fff; }
-.tell.on[data-t="beacon"] { background: var(--accent); border-color: var(--accent); }
+.tell.on .ic { filter: drop-shadow(0 0 calc(var(--u) * .35) currentColor); }
+.tell.on[data-t="turn"]   { color: var(--tell-green); background: color-mix(in srgb, var(--tell-green) 14%, var(--well)); }
+.tell.on[data-t="high"]   { color: var(--tell-blue);  background: color-mix(in srgb, var(--tell-blue) 14%, var(--well)); }
+.tell.on[data-t="park"], .tell.on[data-t="warn"] { color: var(--crit); background: color-mix(in srgb, var(--crit) 16%, var(--well)); }
+.tell.on[data-t="beacon"] { color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, var(--well)); }
 
 /* ── nav ────────────────────────────────────────────────── */
 .nav { gap: calc(var(--u) * .55); padding: calc(var(--u) * .55); }
-/* touch-action: none, or the browser takes the drag as a scroll before the map sees it */
-.mapwrap { position: relative; flex: 1; min-height: 0; border-radius: calc(var(--r) * .8); overflow: hidden; background: var(--raised); border: 1px solid var(--line); touch-action: none; cursor: grab; }
+/* The one screen in the slab: dark glass in a raised bezel.
+   touch-action: none, or the browser takes the drag as a scroll before the map sees it */
+.mapwrap {
+  position: relative; flex: 1; min-height: 0; border-radius: calc(var(--r) * .8); overflow: hidden;
+  background: var(--map-ground); touch-action: none; cursor: grab;
+  border: calc(var(--u) * .3) solid var(--raised);
+  box-shadow: var(--out);
+}
+/* Glass depth over the picture; never in the way of a finger. */
+.mapwrap::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: calc(var(--r) * .55);
+  box-shadow: inset 0 calc(var(--u) * .2) calc(var(--u) * .9) rgba(0,0,0,.7);
+}
 .mapwrap.dragging { cursor: grabbing; }
 .mapwrap canvas { width: 100%; height: 100%; display: block; }
-.mapui { position: absolute; inset: 0; pointer-events: none; padding: calc(var(--u) * .5); display: flex; flex-direction: column; justify-content: space-between; }
+.mapui { position: absolute; inset: 0; pointer-events: none; padding: calc(var(--u) * .5); display: flex; flex-direction: column; justify-content: space-between; z-index: 1; }
 .maptop { display: flex; justify-content: space-between; align-items: flex-start; gap: calc(var(--u) * .5); }
 .plaque {
-  background: color-mix(in srgb, var(--ground) 82%, transparent);
-  border: 1px solid var(--line); border-radius: calc(var(--r) * .7);
+  background: color-mix(in srgb, var(--map-ground) 80%, transparent);
+  border: 1px solid rgba(255,255,255,.07); border-radius: calc(var(--r) * .7);
   padding: calc(var(--u) * .3) calc(var(--u) * .7);
   display: flex; align-items: center; gap: calc(var(--u) * .5);
+  color: #E4E7EC; letter-spacing: .08em;
 }
-.plaque b { font-size: calc(var(--u) * 1.35); font-weight: 700; font-family: var(--mono); }
+.plaque b { font-size: calc(var(--u) * 1.3); font-weight: 700; font-family: var(--mono); }
 .plaque .ic { width: calc(var(--u) * 1.9); height: calc(var(--u) * 1.9); color: var(--accent); }
 /* Only appears once the map has been dragged off the truck, and takes it back. */
 .recentre {
   display: none; pointer-events: auto; align-self: flex-start; cursor: pointer;
-  background: color-mix(in srgb, var(--accent) 88%, transparent); color: #17120A;
-  border: 1px solid var(--accent); border-radius: calc(var(--r) * .6);
-  padding: calc(var(--u) * .45) calc(var(--u) * 1.1);
-  font-size: calc(var(--u) * 1.05); font-weight: 700; letter-spacing: .06em;
+  background: var(--accent); color: #1E1210;
+  border: 0; border-radius: 999px;
+  box-shadow: 0 0 calc(var(--u) * 1) var(--glow);
+  padding: calc(var(--u) * .45) calc(var(--u) * 1.2);
+  font-family: inherit; font-size: calc(var(--u) * 1); font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
 }
 .recentre.show { display: block; }
 .zoom { display: flex; flex-direction: column; gap: calc(var(--u) * .35); pointer-events: auto; }
 .zoom button {
   width: calc(var(--u) * 2.6); height: calc(var(--u) * 2.6);
-  background: color-mix(in srgb, var(--ground) 82%, transparent); color: var(--text);
-  border: 1px solid var(--line); border-radius: calc(var(--r) * .6);
+  background: color-mix(in srgb, var(--map-ground) 80%, transparent); color: #E4E7EC;
+  border: 1px solid rgba(255,255,255,.08); border-radius: 50%;
   display: grid; place-items: center; cursor: pointer;
 }
+.zoom button:active { color: var(--accent); border-color: var(--accent); }
 .zoom button .ic { width: calc(var(--u) * 1.5); height: calc(var(--u) * 1.5); }
 .mapfoot { display: flex; align-items: flex-end; justify-content: space-between; }
-.scale { display: flex; align-items: center; gap: calc(var(--u) * .4); color: var(--muted); font-size: calc(var(--u) * .95); letter-spacing: .1em; }
-.scale i { display: block; height: calc(var(--u) * .5); border: 1px solid var(--muted); border-top: 0; width: calc(var(--u) * 4.5); }
+.scale { display: flex; align-items: center; gap: calc(var(--u) * .4); color: #8A919C; font-size: calc(var(--u) * .95); letter-spacing: .12em; }
+.scale i { display: block; height: calc(var(--u) * .5); border: 1px solid #8A919C; border-top: 0; width: calc(var(--u) * 4.5); }
 
-.navinfo { display: flex; align-items: stretch; gap: calc(var(--u) * .8); flex: none; }
+.navinfo { display: flex; flex-direction: column; gap: calc(var(--u) * .4); flex: none; padding: 0 calc(var(--u) * .2); }
 .navinfo .item { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; }
-.navinfo .item b { font-size: calc(var(--u) * 1.7); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.navinfo .item b { font-size: calc(var(--u) * 1.6); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.navinfo .dst { flex-direction: row; align-items: baseline; gap: calc(var(--u) * .8); }
+.navinfo .dst .lbl { flex: none; }
+.navinfo .dst b { font-size: calc(var(--u) * 1.5); }
+/* Four fixed columns, so no figure can take room from another. */
+.navnums { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.navnums .item { padding-left: calc(var(--u) * .7); border-left: 2px solid var(--well); box-shadow: inset 1px 0 0 var(--hi); }
+.navnums .item:first-child { padding-left: 0; border-left: 0; box-shadow: none; }
+.navnums .lbl { letter-spacing: .14em; }
 .navinfo .item b.mono { font-family: var(--mono); font-weight: 600; }
 .navinfo .late b { color: var(--crit); }
 .navinfo .good b { color: var(--tell-green); }
@@ -229,78 +294,100 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: 
 /* ── vitals ─────────────────────────────────────────────── */
 .vitals { gap: calc(var(--u) * .45); }
 .vitals .body { display: flex; flex-direction: column; gap: calc(var(--u) * .45); flex: 1; min-height: 0; }
-.meter { display: flex; flex-direction: column; gap: calc(var(--u) * .25); }
+.meter { display: flex; flex-direction: column; gap: calc(var(--u) * .3); }
 .meter .top { display: flex; justify-content: space-between; align-items: baseline; gap: calc(var(--u) * .4); }
 .meter .val { font-family: var(--mono); font-size: calc(var(--u) * 1.35); white-space: nowrap; }
 .meter .val em { font-style: normal; color: var(--muted); font-size: calc(var(--u) * 1.05); }
-.track { height: calc(var(--u) * .95); border-radius: 999px; background: var(--raised); overflow: hidden; border: 1px solid var(--line); }
-.fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width .4s ease, background .3s ease; }
-.fill.ok { background: var(--tell-green); }
-.fill.warn { background: var(--accent); }
-.fill.bad { background: var(--crit); }
+/* A groove, and a lit bar lying in it. */
+.track {
+  height: calc(var(--u) * .95); border-radius: 999px; background: var(--well); overflow: hidden;
+  box-shadow: var(--in-sm); padding: calc(var(--u) * .14);
+}
+.fill {
+  height: 100%; background: var(--accent); border-radius: 999px;
+  box-shadow: 0 0 calc(var(--u) * .5) var(--glow);
+  transition: width .4s ease, background .3s ease;
+}
+.fill.ok   { background: var(--tell-green); box-shadow: 0 0 calc(var(--u) * .45) color-mix(in srgb, var(--tell-green) 45%, transparent); }
+.fill.warn { background: var(--warn);       box-shadow: 0 0 calc(var(--u) * .45) color-mix(in srgb, var(--warn) 45%, transparent); }
+.fill.bad  { background: var(--crit);       box-shadow: 0 0 calc(var(--u) * .45) color-mix(in srgb, var(--crit) 50%, transparent); }
 
-.split { height: 1px; background: var(--line); margin: calc(var(--u) * .1) 0; }
-.dmg { display: grid; grid-template-columns: auto 1fr auto; gap: calc(var(--u) * .28) calc(var(--u) * .55); align-items: center; }
-.dmg span { font-size: calc(var(--u) * 1); color: var(--muted); letter-spacing: .05em; }
-.dmg .track { height: calc(var(--u) * .7); }
+.split { height: 2px; background: var(--well); box-shadow: 0 1px 0 var(--hi); margin: calc(var(--u) * .15) 0; border-radius: 1px; }
+.dmg { display: grid; grid-template-columns: auto 1fr auto; gap: calc(var(--u) * .3) calc(var(--u) * .55); align-items: center; }
+.dmg span { font-size: calc(var(--u) * .95); color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+.dmg .track { height: calc(var(--u) * .7); padding: calc(var(--u) * .1); }
 .dmg b { font-family: var(--mono); font-size: calc(var(--u) * 1.05); font-weight: 500; }
 .odo { display: flex; justify-content: space-between; align-items: baseline; }
 .odo b { font-family: var(--mono); font-size: calc(var(--u) * 1.3); font-weight: 600; }
 
 /* ── control deck ───────────────────────────────────────── */
 .deckrows { display: flex; flex-direction: column; gap: calc(var(--u) * .55); flex: none; }
-.grp { display: flex; flex-direction: column; gap: calc(var(--u) * .32); }
-.grp .row { display: flex; gap: calc(var(--u) * .45); height: calc(var(--u) * 5.1); }
+.grp { display: flex; flex-direction: column; gap: calc(var(--u) * .36); }
+.grp .row { display: flex; gap: calc(var(--u) * .5); height: calc(var(--u) * 5.1); }
 
+/* A pad raised out of the clay. Pressed, it sinks into it. */
 .btn {
   flex: 1; min-width: 0;
-  background: var(--raised); border: 1px solid var(--line); color: var(--text);
+  background: var(--raised); border: 0; color: var(--soft);
   border-radius: calc(var(--r) * .8);
+  box-shadow: var(--out);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: calc(var(--u) * .25);
-  font-family: inherit; font-size: calc(var(--u) * .98); font-weight: 600;
-  letter-spacing: .06em; text-transform: uppercase; line-height: 1.05; text-align: center;
+  font-family: inherit; font-size: calc(var(--u) * .9); font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; line-height: 1.05; text-align: center;
   cursor: pointer; padding: calc(var(--u) * .25);
   position: relative; overflow: hidden;
-  transition: background .12s ease, border-color .12s ease, color .12s ease;
+  transition: box-shadow .12s ease, background .12s ease, color .12s ease;
 }
 /* The finger gets its answer from the press itself, not from the round trip. */
-.btn:active { transform: translateY(1px); background: var(--accent-soft); border-color: var(--accent); }
+.btn:active { box-shadow: var(--in); background: var(--ground); color: var(--accent); }
 .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
-.btn.on { background: var(--accent); border-color: var(--accent); color: #17120A; }
-.btn.on.red { background: var(--crit); border-color: var(--crit); color: #fff; }
+
+/* Switches the game reports back on carry a lamp; lit, the pad stays pressed in. */
+.btn[data-confirm]::before {
+  content: ""; position: absolute; top: calc(var(--u) * .55); right: calc(var(--u) * .6);
+  width: calc(var(--u) * .45); height: calc(var(--u) * .45);
+  border-radius: 50%; background: var(--well); box-shadow: var(--in-sm);
+  transition: background .12s ease, box-shadow .12s ease;
+}
+.btn.on { box-shadow: var(--in); background: var(--ground); color: var(--accent); }
+.btn.on .ic { filter: drop-shadow(0 0 calc(var(--u) * .3) var(--glow)); }
+.btn.on::before { background: var(--accent); box-shadow: 0 0 calc(var(--u) * .45) var(--accent); }
+.btn.on.red { color: var(--crit); }
+.btn.on.red .ic { filter: drop-shadow(0 0 calc(var(--u) * .3) var(--crit)); }
+.btn.on.red::before { background: var(--crit); box-shadow: 0 0 calc(var(--u) * .45) var(--crit); }
 .btn.wide { flex: 1.35; }
 .btn.narrow { flex: .62; }
 /* A command the game acknowledged but reports nothing back about. Deliberately brief:
    it is the receipt for a press, not a state the button has entered. */
-.btn.ack { background: var(--accent); border-color: var(--accent); color: #17120A; }
+.btn.ack { box-shadow: var(--in), inset 0 0 0 1px var(--accent); background: var(--ground); color: var(--accent); }
 
-.btn.pending { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.btn.pending { box-shadow: var(--in); background: var(--ground); color: var(--accent); }
 .btn.pending::after {
   content: ""; position: absolute; inset: 0;
-  border: calc(var(--u) * .18) solid var(--accent); border-radius: inherit;
+  border: calc(var(--u) * .14) solid var(--accent); border-radius: inherit;
   animation: waiting .55s ease-in-out infinite;
 }
 @keyframes waiting { 0%,100% { opacity: .85 } 50% { opacity: .12 } }
-.btn.failed { animation: shake .3s ease; border-color: var(--crit); color: var(--crit); }
+.btn.failed { animation: shake .3s ease; color: var(--crit); box-shadow: var(--out), inset 0 0 0 1px var(--crit); }
 @keyframes shake { 25% { transform: translateX(-3px) } 75% { transform: translateX(3px) } }
 
-.ccrow .btn { font-size: calc(var(--u) * .92); }
+.ccrow .btn { font-size: calc(var(--u) * .86); }
 .ccrow .btn .ic { width: calc(var(--u) * 1.7); height: calc(var(--u) * 1.7); }
 
 /* The game's own route advisor, sitting under the mini GPS. Held apart from the zoom
    buttons on the canvas above it, which move this panel's map and nothing else. */
 .gpsrow {
-  display: flex; align-items: center; gap: calc(var(--u) * .45);
+  display: flex; align-items: center; gap: calc(var(--u) * .5);
   flex: none; height: calc(var(--u) * 3.5);
 }
-.gpsrow > .lbl { flex: none; padding-right: calc(var(--u) * .2); }
-.gpsrow .btn { font-size: calc(var(--u) * .88); gap: calc(var(--u) * .15); }
+.gpsrow > .lbl { flex: none; padding: 0 calc(var(--u) * .2); }
+.gpsrow .btn { font-size: calc(var(--u) * .82); gap: calc(var(--u) * .15); }
 .gpsrow .btn .ic { width: calc(var(--u) * 1.45); height: calc(var(--u) * 1.45); }
 
 /* Esc and Enter, in the space the AdBlue meter used to take. */
-.keysrow { display: flex; gap: calc(var(--u) * .45); flex: none; height: calc(var(--u) * 3.2); }
-.keysrow .btn { font-size: calc(var(--u) * .95); gap: calc(var(--u) * .15); }
+.keysrow { display: flex; gap: calc(var(--u) * .5); flex: none; height: calc(var(--u) * 3.2); }
+.keysrow .btn { font-size: calc(var(--u) * .9); gap: calc(var(--u) * .15); }
 .keysrow .btn .ic { width: calc(var(--u) * 1.5); height: calc(var(--u) * 1.5); }
 
 /* ── no telemetry: the readouts freeze and grey, the chrome stays lit ── */
@@ -317,9 +404,10 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: 
 
 .notice {
   position: absolute; left: 50%; bottom: calc(var(--u) * 4); transform: translateX(-50%);
-  background: var(--raised); border: 1px solid var(--accent); color: var(--text);
+  background: var(--raised); color: var(--text);
+  box-shadow: var(--out-lg), inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent);
   border-radius: 999px; padding: calc(var(--u) * .65) calc(var(--u) * 1.5);
-  font-size: calc(var(--u) * 1.15); letter-spacing: .04em; white-space: nowrap;
+  font-size: calc(var(--u) * 1.1); letter-spacing: .08em; white-space: nowrap;
   opacity: 0; transition: opacity .3s ease; pointer-events: none;
 }
 .notice.show { opacity: 1; }
